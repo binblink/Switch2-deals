@@ -18,6 +18,7 @@ def create_tables(conn):
                 game_id       INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
                 asin          TEXT UNIQUE,
                 title_amazon  TEXT,
+                image_url     TEXT,
                 product_type  TEXT,
                 is_available  BOOLEAN DEFAULT TRUE,
                 created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW()

@@ -67,6 +67,7 @@ class IGDBClient:
             query = f"""
                 fields id, name, slug, first_release_date;
                 where platforms = {PLATFORM_ID}
+                    & game_type = (0, 8, 9, 10, 11)
                     & id > {last_id};
                 sort id asc;
                 limit {limit};
@@ -80,7 +81,8 @@ class IGDBClient:
             all_games.extend(batch)
 
             last_id = batch[-1]["id"]
-
+            logger.info(f"Fetched {len(batch)} games, last_id: {last_id}")
+            
             if len(batch) < limit:
                 break
 
