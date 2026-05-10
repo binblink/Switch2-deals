@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwitchDeals — Tracker de Prix Switch 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        Switch<span>Deals</span>
+        <span class="logo-tag">// PRICE TRACKER v1.0</span>
+    </div>
+    <nav>
+        <a href="#" class="active">TOUS</a>
+        <a href="#" class="filter-btn up" id="nav-up">▲ HAUSSE</a>
+        <a href="#" class="filter-btn down" id="nav-down">▼ BAISSE</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <h1>Track. Compare.<br><em>Save.</em></h1>
+    <p>// PRIX EN TEMPS RÉEL — NINTENDO SWITCH 2</p>
+</div>
+
+<div class="stats-bar">
+    <div class="stat">
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-label">Jeux trackés</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="stat-down" style="color:var(--green)">—</div>
+        <div class="stat-label">En baisse</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="stat-up" style="color:var(--orange)">—</div>
+        <div class="stat-label">En hausse</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value" id="stat-avg">—</div>
+        <div class="stat-label">Prix moyen</div>
+    </div>
+</div>
+
+<div class="controls">
+    <div class="search-wrapper">
+        <span class="search-icon">⌕</span>
+        <input type="search" id="search" placeholder="RECHERCHER UN JEU...">
+    </div>
+    <button class="filter-btn up" id="filter-up">▲ HAUSSE</button>
+    <button class="filter-btn down" id="filter-down">▼ BAISSE</button>
+    <button class="filter-btn" id="filter-all">TOUS</button>
+</div>
+
+<div id="games-container">
+    <div class="loading">CHARGEMENT DES DONNÉES</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <button class="modal-close" id="modal-close">✕</button>
+        <div class="modal-header">
+            <img class="modal-image" id="modal-img" src="" alt="">
+            <div class="modal-info">
+                <div class="modal-title" id="modal-title"></div>
+                <div class="modal-price" id="modal-price"></div>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="chart-container">
+                <canvas id="price-chart"></canvas>
+            </div>
+            <table class="price-history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Prix</th>
+                        <th>Variation</th>
+                    </tr>
+                </thead>
+                <tbody id="price-history-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    const allGames = {{ games | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>

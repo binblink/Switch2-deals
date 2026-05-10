@@ -9,7 +9,10 @@ def sync_games():
     games = client.get_switch2_games()
     logger.info(f"Nombre de jeux trouvés : {len(games)}")
     conn = get_connection()
-    insert_games_to_db(games, conn)
+    try:
+        insert_games_to_db(games, conn)
+    finally:
+        release_connection(conn)
 
 
 def insert_games_to_db(games, conn):
@@ -29,5 +32,3 @@ def insert_games_to_db(games, conn):
         logger.error(f"Error inserting games into DB: {e}")
         conn.rollback()
         raise
-    finally:
-        release_connection(conn)

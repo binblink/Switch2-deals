@@ -21,7 +21,8 @@ def create_tables(conn):
                 image_url     TEXT,
                 product_type  TEXT,
                 is_available  BOOLEAN DEFAULT TRUE,
-                created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                is_manual     BOOLEAN DEFAULT FALSE,
+                created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW() 
             );  
  
             CREATE TABLE IF NOT EXISTS prices (

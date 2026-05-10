@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwitchDeals — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        Switch<span>Deals</span>
+        <span class="logo-tag">// ADMIN</span>
+    </div>
+    <nav>
+        <a href="/">← RETOUR</a>
+    </nav>
+</header>
+
+<div class="admin-container">
+    <div class="admin-title">// Gestion des <span>fiches jeux</span></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <input type="search" class="admin-search" id="admin-search" placeholder="FILTRER PAR NOM...">
+
+    <div class="col-header">
+        <div></div>
+        <div>Jeu</div>
+        <div style="text-align:right">Prix actuel</div>
+        <div>ASIN Amazon</div>
+        <div></div>
+    </div>
+
+    <div id="games-list">
+        {% for game in games %}
+        <div class="game-row {% if game.is_manual %}is-manual{% endif %}" data-name="{{ game.title | lower }}">
+
+            {% if game.image_url %}
+                <img class="game-thumb" src="{{ game.image_url }}" alt="{{ game.title }}">
+            {% else %}
+                <div class="game-thumb-placeholder">🎮</div>
+            {% endif %}
+
+            <div class="game-info">
+                <div class="game-name">{{ game.title }}</div>
+                <div class="game-asin">{{ game.asin or '— aucun ASIN' }}</div>
+            </div>
+
+            <div class="game-price {% if not game.price %}no-price{% endif %}">
+                {% if game.price %}{{ "%.2f"|format(game.price) }}€{% else %}N/A{% endif %}
+            </div>
+
+            <form class="asin-form" method="POST" action="/admin/game/{{ game.id }}">
+                <input
+                    class="asin-input"
+                    type="text"
+                    name="asin"
+                    value="{{ game.asin or '' }}"
+                    placeholder="EX: B09VKJ9KX2"
+                    maxlength="20"
+                >
+                <button class="btn-save" type="submit">OK</button>
+            </form>
+
+            <div>
+                {% if game.is_manual %}
+                    <span class="manual-badge">MANUEL</span>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('admin-search').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll('.game-row').forEach(row => {
+            row.style.display = row.dataset.name.includes(query) ? '' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>

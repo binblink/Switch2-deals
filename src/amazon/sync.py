@@ -13,6 +13,7 @@ def get_games_without_asin(conn):
                 FROM games g
                 LEFT JOIN products p ON p.game_id = g.id
                 WHERE p.asin IS NULL
+                    OR (p.is_manual = FALSE AND p.is_available = TRUE)
             """)
             return cur.fetchall()
     except Exception as e:
