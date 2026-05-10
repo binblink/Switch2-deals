@@ -60,17 +60,17 @@ class IGDBClient:
     
     def get_switch2_games(self):
         all_games = []
-        last_id = 0
         limit = 500
+        offset = 0
 
         while True:
             query = f"""
                 fields id, name, slug, first_release_date;
-                where platforms = {PLATFORM_ID}
-                    & game_type = (0, 8, 9, 10, 11)
-                    & id > {last_id};
+                where platforms = ({PLATFORM_ID})
+                    & game_type != (1, 7);
                 sort id asc;
                 limit {limit};
+                offset {offset};
             """
 
             batch = self.request("games", query)
@@ -79,10 +79,9 @@ class IGDBClient:
                 break
 
             all_games.extend(batch)
+            offset += len(batch)
+            logger.info(f"Fetched {len(batch)} games, total: {len(all_games)}")
 
-            last_id = batch[-1]["id"]
-            logger.info(f"Fetched {len(batch)} games, last_id: {last_id}")
-            
             if len(batch) < limit:
                 break
 

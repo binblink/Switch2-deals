@@ -21,6 +21,7 @@ def get_games_from_db(conn):
                             FROM prices 
                             WHERE product_id = p.id
                         )
+                    WHERE g.is_excluded = FALSE
                     ORDER BY g.title ASC
                 """)
             rows = cur.fetchall()
@@ -41,3 +42,34 @@ def get_games_from_db(conn):
         logger.error(f"Error getting games from DB: {e}")
         conn.rollback()
         raise
+
+def upsert_product(conn, game_id, asin):
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE products SET is_available = FALSE 
+            WHERE game_id = %s AND asin != %s
+        """, (game_id, asin))
+        cur.execute("""
+            INSERT INTO products (game_id, asin, is_manual, is_available)
+            VALUES (%s, %s, TRUE, TRUE)
+            ON CONFLICT (asin) DO UPDATE SET
+                game_id = EXCLUDED.game_id,
+                is_manual = TRUE,
+                is_available = TRUE
+        """, (game_id, asin))
+    conn.commit()
+
+def update_product_price_and_image(conn, asin, price, image_url):
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE products SET image_url = %s
+            WHERE asin = %s
+        """, (image_url, asin))
+        cur.execute("SELECT id FROM products WHERE asin = %s", (asin,))
+        product_id = cur.fetchone()[0]
+        cur.execute("""
+            INSERT INTO prices (product_id, price, currency, source)
+            VALUES (%s, %s, 'EUR', 'amazon')
+            ON CONFLICT (product_id, DATE(scraped_at)) DO NOTHING
+        """, (product_id, price))
+    conn.commit()

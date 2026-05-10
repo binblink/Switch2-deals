@@ -2,6 +2,8 @@ import logging
 from amazon import scraper
 from playwright.sync_api import sync_playwright
 from db.connection import get_connection, release_connection
+from db.queries import update_product_price_and_image
+from amazon.scraper import get_price_and_image
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +16,7 @@ def get_games_without_asin(conn):
                 LEFT JOIN products p ON p.game_id = g.id
                 WHERE p.asin IS NULL
                     OR (p.is_manual = FALSE AND p.is_available = TRUE)
+                    AND g.is_excluded = FALSE
             """)
             return cur.fetchall()
     except Exception as e:
@@ -105,3 +108,22 @@ def sync_prices():
                     update_price(conn, g[0], price)
     finally:
         release_connection(conn)
+
+def refresh_product(conn, asin: str) -> bool:
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        result = get_price_and_image(page, asin)
+
+    if result:
+        price, image_url = result
+        update_product_price_and_image(conn, asin, price, image_url)
+        return True
+    else:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE products SET is_available = FALSE 
+                WHERE asin = %s
+            """, (asin,))
+        conn.commit()
+        return False

@@ -23,6 +23,14 @@
 <div class="admin-container">
     <div class="admin-title">// Gestion des <span>fiches jeux</span></div>
 
+    <div style="margin-bottom: 20px; display: flex; gap: 12px; align-items: center;">
+        <button class="btn-save" onclick="bulkExclude()">EXCLURE LA SÉLECTION</button>
+        <span id="selection-count" style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted)"></span>
+    </div>
+    <form id="bulk-form" method="POST" action="/admin/bulk-exclude" style="display:none">
+        <div id="bulk-inputs"></div>
+    </form>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
             <div class="flash-{{ category }}">{{ message }}</div>
@@ -33,15 +41,19 @@
 
     <div class="col-header">
         <div></div>
+        <div></div>
         <div>Jeu</div>
         <div style="text-align:right">Prix actuel</div>
         <div>ASIN Amazon</div>
+        <div></div>
         <div></div>
     </div>
 
     <div id="games-list">
         {% for game in games %}
         <div class="game-row {% if game.is_manual %}is-manual{% endif %}" data-name="{{ game.title | lower }}">
+            
+            <input type="checkbox" class="game-checkbox" data-id="{{ game.id }}" style="accent-color:var(--red);">
 
             {% if game.image_url %}
                 <img class="game-thumb" src="{{ game.image_url }}" alt="{{ game.title }}">
@@ -70,6 +82,12 @@
                 <button class="btn-save" type="submit">OK</button>
             </form>
 
+            <form method="POST" action="/admin/game/{{ game.id }}/exclude">
+                <button type="submit" class="btn-exclude {% if game.is_excluded %}excluded{% endif %}">
+                    {% if game.is_excluded %}✓ Exclu{% else %}Exclure{% endif %}
+                </button>
+            </form>
+
             <div>
                 {% if game.is_manual %}
                     <span class="manual-badge">MANUEL</span>
@@ -88,6 +106,29 @@
             row.style.display = row.dataset.name.includes(query) ? '' : 'none';
         });
     });
+
+    document.querySelectorAll('.game-checkbox').forEach(cb => {
+        cb.addEventListener('change', () => {
+            const count = document.querySelectorAll('.game-checkbox:checked').length;
+            document.getElementById('selection-count').textContent = 
+                count ? `${count} sélectionné(s)` : '';
+        });
+    });
+
+    function bulkExclude() {
+        const checked = document.querySelectorAll('.game-checkbox:checked');
+        if (!checked.length) return;
+        const container = document.getElementById('bulk-inputs');
+        container.innerHTML = '';
+        checked.forEach(cb => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'game_ids';
+            input.value = cb.dataset.id;
+            container.appendChild(input);
+        });
+        document.getElementById('bulk-form').submit();
+    }
 </script>
 
 </body>

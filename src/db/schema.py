@@ -10,7 +10,8 @@ def create_tables(conn):
                 title       TEXT NOT NULL,
                 igdb_slug   TEXT,
                 platform    TEXT DEFAULT 'switch2',
-                first_release_date TIMESTAMP
+                first_release_date TIMESTAMP,
+                is_excluded BOOLEAN DEFAULT FALSE
             );
  
             CREATE TABLE IF NOT EXISTS products (

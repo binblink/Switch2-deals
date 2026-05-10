@@ -568,7 +568,7 @@ canvas { display: block; }
 
 .game-row {
     display: grid;
-    grid-template-columns: 60px 1fr 120px 300px 80px;
+    grid-template-columns: 30px 60px 1fr 120px 300px 100px 80px;
     align-items: center;
     gap: 16px;
     background: var(--surface);
@@ -723,7 +723,7 @@ canvas { display: block; }
 
 .col-header {
     display: grid;
-    grid-template-columns: 60px 1fr 120px 300px 80px;
+    grid-template-columns: 30px 60px 1fr 120px 300px 100px 80px;
     gap: 16px;
     padding: 8px 16px;
     margin-bottom: 4px;
@@ -732,4 +732,30 @@ canvas { display: block; }
     color: var(--text-muted);
     letter-spacing: 2px;
     text-transform: uppercase;
+}
+
+.btn-exclude {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-exclude:hover {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.btn-exclude.excluded {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(0, 230, 118, 0.05);
 }
