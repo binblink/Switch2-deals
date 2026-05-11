@@ -102,6 +102,9 @@ Le dashboard est accessible sur [http://localhost:5000](http://localhost:5000)
 
 - **Page principale** — liste des jeux avec prix actuels, tendances hausse/baisse, recherche
 - **Page admin** — correction manuelle des ASINs Amazon (`/admin`)
+  - Correction d'ASIN par jeu avec mise à jour immédiate du prix et de l'image
+  - Exclusion individuelle ou en masse des jeux non disponibles sur Amazon
+- **API prix** — historique des prix par jeu (`/api/game/<id>/prices`)
 
 ## Structure du projet
 
